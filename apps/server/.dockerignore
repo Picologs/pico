@@ -1,0 +1,45 @@
+# Git files
+.git
+.gitignore
+
+# Dependencies
+node_modules
+
+# Environment variables (except example)
+.env
+.env.*
+!.env.example
+
+# Build outputs
+dist
+target
+
+# Documentation
+README.md
+*.md
+!CLAUDE.md
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test files
+tests
+playwright.config.ts
+test-results
+playwright-report
+*.test.ts
+*.spec.ts
+.playwright
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo

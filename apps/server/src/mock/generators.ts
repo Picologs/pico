@@ -1,0 +1,664 @@
+/**
+ * Event generators for creating realistic Star Citizen log objects
+ *
+ * Each function returns a fully-formed Log object matching the @pico/types schema.
+ * These generators produce varied, authentic-looking events with proper metadata.
+ */
+
+import type { Log, LogMetadata } from "@pico/types";
+import {
+  randomItem,
+  randomWeapon,
+  randomLocation,
+  randomNPC,
+  randomMission,
+  randomDamageType,
+  randomEntityId,
+} from "./data";
+import { createHash } from "crypto";
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Fake user IDs for demo logs
+ */
+const FAKE_USER_IDS = [
+  "fake-user-1",
+  "fake-user-2",
+  "fake-user-3",
+  "fake-user-4",
+  "fake-user-5",
+];
+const FAKE_USER_NAMES = [
+  "SkyRunner42",
+  "VoidPilot",
+  "StarHunter",
+  "NovaExplorer",
+  "CosmicTrader",
+];
+
+/**
+ * Get a random fake user ID and name
+ */
+function getRandomFakeUser(): { userId: string; userName: string } {
+  const index = Math.floor(Math.random() * FAKE_USER_IDS.length);
+  return {
+    userId: FAKE_USER_IDS[index],
+    userName: FAKE_USER_NAMES[index],
+  };
+}
+
+/**
+ * Generate a deterministic log ID from timestamp and line content
+ */
+function generateLogId(timestamp: string, line: string): string {
+  return createHash("sha256")
+    .update(`${timestamp}${line}`)
+    .digest("hex")
+    .substring(0, 16);
+}
+
+/**
+ * Get current ISO timestamp
+ */
+function now(): string {
+  return new Date().toISOString();
+}
+
+// ============================================================================
+// CONNECTION EVENT
+// ============================================================================
+
+export function generateConnection(userId: string, playerName: string): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const line = `${fakeUser.userName} connected to server`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "🔗",
+    line,
+    timestamp,
+    original: `<${timestamp}> <AccountLoginCharacterStatus_Character> Character: ... geid ${randomEntityId()} - ... - name ${fakeUser.userName} - ...`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "connection",
+    metadata: {
+      playerName,
+      playerId: randomEntityId(),
+    },
+  };
+}
+
+// ============================================================================
+// SHIP ENTRY
+// ============================================================================
+
+export function generateShipEntry(
+  userId: string,
+  playerName: string,
+  ship: { rawName: string; displayName: string; id: string },
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const line = `${fakeUser.userName} controls ${ship.displayName}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "", // Ship image used in UI
+    line,
+    timestamp,
+    original: `<${timestamp}> <Vehicle Control Flow> Local client node [${randomEntityId()}] granted control token for '${ship.rawName}' [${ship.id}]`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "vehicle_control_flow",
+    metadata: {
+      vehicleName: ship.displayName,
+      vehicleId: ship.id,
+      playerId: randomEntityId(),
+      action: "granted",
+    },
+  };
+}
+
+// ============================================================================
+// SHIP EXIT
+// ============================================================================
+
+export function generateShipExit(
+  userId: string,
+  playerName: string,
+  ship: { rawName: string; displayName: string; id: string },
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const line = `${fakeUser.userName} exits ${ship.displayName}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Vehicle Control Flow> Local client node [${randomEntityId()}] releasing control token for '${ship.rawName}' [${ship.id}]`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "vehicle_control_flow",
+    metadata: {
+      vehicleName: ship.displayName,
+      vehicleId: ship.id,
+      playerId: randomEntityId(),
+      action: "releasing",
+    },
+  };
+}
+
+// ============================================================================
+// QUANTUM TRAVEL
+// ============================================================================
+
+export function generateQuantumSpooling(
+  userId: string,
+  playerName: string,
+  ship: { displayName: string },
+  destination: string,
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const line = `Quantum drive spooling to ${destination}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "⚡",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Quantum Travel> Spooling quantum drive to ${destination}`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "quantum_travel",
+    metadata: {
+      vehicleName: ship.displayName,
+      location: destination,
+      action: "spooling" as any,
+    },
+  };
+}
+
+export function generateQuantumActive(
+  userId: string,
+  playerName: string,
+  ship: { displayName: string },
+  destination: string,
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const line = `Quantum travel active to ${destination}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "⚡",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Quantum Travel> Quantum drive active, traveling to ${destination}`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "quantum_travel",
+    metadata: {
+      vehicleName: ship.displayName,
+      location: destination,
+      action: "active" as any,
+    },
+  };
+}
+
+export function generateQuantumArrival(
+  userId: string,
+  playerName: string,
+  ship: { displayName: string },
+  destination: string,
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const line = `Arrived at ${destination}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "⚡",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Quantum Travel> Quantum drive cooldown, arrived at ${destination}`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "quantum_travel",
+    metadata: {
+      vehicleName: ship.displayName,
+      location: destination,
+      action: "arrived" as any,
+    },
+  };
+}
+
+// ============================================================================
+// ACTOR DEATH (COMBAT)
+// ============================================================================
+
+export function generatePlayerKillsNPC(
+  userId: string,
+  playerName: string,
+  ship: { displayName: string; rawName: string },
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const npc = randomNPC("pirates");
+  const weapon = randomWeapon("ship");
+  const damageType = randomDamageType();
+  const timestamp = now();
+  const line = `${fakeUser.userName} killed ${npc.name}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "💀",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Actor Death> CActor::Kill: '${npc.name}' [${npc.id}] in zone '${ship.rawName}' killed by '${fakeUser.userName}' [${randomEntityId()}] using '${weapon}' with damage type '${damageType}'`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "actor_death",
+    metadata: {
+      victimName: npc.name,
+      victimId: npc.id,
+      killerName: fakeUser.userName,
+      killerId: randomEntityId(),
+      zone: ship.displayName,
+      weaponClass: weapon,
+      damageType: damageType.toLowerCase(),
+    },
+  };
+}
+
+export function generateNPCKillsPlayer(
+  userId: string,
+  playerName: string,
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const npc = randomNPC("pirates");
+  const weapon = randomWeapon("ship");
+  const damageType = randomDamageType();
+  const timestamp = now();
+  const line = `${npc.name} killed ${fakeUser.userName}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "💀",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Actor Death> CActor::Kill: '${fakeUser.userName}' [${randomEntityId()}] killed by '${npc.name}' [${npc.id}] using '${weapon}' with damage type '${damageType}'`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "actor_death",
+    metadata: {
+      victimName: fakeUser.userName,
+      victimId: randomEntityId(),
+      killerName: npc.name,
+      killerId: npc.id,
+      weaponClass: weapon,
+      damageType: damageType.toLowerCase(),
+    },
+  };
+}
+
+// ============================================================================
+// VEHICLE DESTRUCTION
+// ============================================================================
+
+export function generateShipDestruction(
+  userId: string,
+  playerName: string,
+  ship: { rawName: string; displayName: string; id: string },
+  cause?: { name: string; id: string },
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const actualCause = cause || randomNPC("pirates");
+  const line = `${actualCause.name} destroyed ${ship.displayName}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "💥",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Destruction> Vehicle '${ship.rawName}' [${ship.id}] destroyed by '${actualCause.name}' [${actualCause.id}]`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "destruction",
+    metadata: {
+      vehicleName: ship.displayName,
+      vehicleId: ship.id,
+      causeName: actualCause.name,
+      causeId: actualCause.id,
+      destroyLevelFrom: "1",
+      destroyLevelTo: "2",
+    },
+  };
+}
+
+// ============================================================================
+// MISSION EVENTS
+// ============================================================================
+
+export function generateMissionShared(userId: string, playerName: string): Log {
+  const fakeUser = getRandomFakeUser();
+  const mission = randomMission();
+  const timestamp = now();
+  const line = `Mission shared: ${mission}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "📋",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Mission Shared> Mission '${mission}' shared with group`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "mission_shared",
+    metadata: {
+      missionId: randomEntityId(),
+    },
+  };
+}
+
+export function generateMissionObjective(
+  userId: string,
+  playerName: string,
+  objective: string,
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const line = `Mission objective: ${objective}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "🎯",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Mission Objective> ${objective}`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "mission_objective",
+    metadata: {
+      missionId: randomEntityId(),
+    },
+  };
+}
+
+export function generateMissionCompleted(
+  userId: string,
+  playerName: string,
+  success: boolean = true,
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const completionType = success ? "Success" : "Failed";
+  const line = `Mission ${completionType.toLowerCase()}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: success ? "✅" : "❌",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Mission Completed> Mission completed: ${completionType}`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "mission_completed",
+    metadata: {
+      missionId: randomEntityId(),
+      completionType: completionType.toLowerCase(),
+    },
+  };
+}
+
+// ============================================================================
+// HOSPITAL RESPAWN
+// ============================================================================
+
+export function generateRespawn(
+  userId: string,
+  playerName: string,
+  location?: string,
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const spawnLocation = location || randomLocation("cities");
+  const line = `${fakeUser.userName} respawned at ${spawnLocation}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "🏥",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Hospital Respawn> Player respawned at ${spawnLocation}`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "hospital_respawn",
+    metadata: {
+      location: spawnLocation,
+      spawnpoint: `${spawnLocation}_Medical_Bay`,
+    },
+  };
+}
+
+// ============================================================================
+// INSURANCE CLAIM
+// ============================================================================
+
+export function generateInsuranceClaim(
+  userId: string,
+  playerName: string,
+  ship: { displayName: string; id: string },
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const line = `${fakeUser.userName} claimed ${ship.displayName}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "📋",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Insurance Claim> Vehicle '${ship.displayName}' [${ship.id}] claimed`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "insurance_claim",
+    metadata: {
+      vehicleName: ship.displayName,
+      vehicleId: ship.id,
+    },
+  };
+}
+
+// ============================================================================
+// ENVIRONMENTAL DEATH
+// ============================================================================
+
+export function generateEnvironmentalDeath(
+  userId: string,
+  playerName: string,
+  hazardType: "suffocation" | "depressurization" | "burn" | "freeze" | "fall",
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const line = `${fakeUser.userName} died from ${hazardType}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "⚠️",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Environmental Hazard> Player '${fakeUser.userName}' killed by ${hazardType}`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "environmental_hazard",
+    metadata: {
+      deathCause: hazardType,
+      damageType: "environmental",
+    },
+  };
+}
+
+// ============================================================================
+// COLLISION / CRASH
+// ============================================================================
+
+export function generateFatalCollision(
+  userId: string,
+  playerName: string,
+  ship: { displayName: string; rawName: string; id: string },
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const line = `${ship.displayName} crashed`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "💥",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Fatal Collision> Vehicle '${ship.rawName}' [${ship.id}] fatal collision with terrain`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "fatal_collision",
+    metadata: {
+      vehicleName: ship.displayName,
+      vehicleId: ship.id,
+      damageType: "collision",
+      part: randomItem(["Wing", "Nose", "Tail", "Underbelly", "Engine"]),
+    },
+  };
+}
+
+// ============================================================================
+// LOCATION CHANGE
+// ============================================================================
+
+export function generateLocationChange(
+  userId: string,
+  playerName: string,
+  location: string,
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const line = `Inventory opened at ${location}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "📍",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Location Change> Inventory opened at ${location}`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "location_change",
+    metadata: {
+      location,
+      zone: location,
+    },
+  };
+}
+
+// ============================================================================
+// SYSTEM QUIT
+// ============================================================================
+
+export function generateSystemQuit(userId: string, playerName: string): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const line = `${fakeUser.userName} disconnected`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "🔌",
+    line,
+    timestamp,
+    original: `<${timestamp}> <System Quit> Session ended`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "system_quit",
+  };
+}
+
+// ============================================================================
+// LANDING PAD
+// ============================================================================
+
+export function generateLandingPad(
+  userId: string,
+  playerName: string,
+  ship: { displayName: string; id: string },
+  location: string,
+  action: "requesting" | "granted" | "releasing",
+): Log {
+  const fakeUser = getRandomFakeUser();
+  const timestamp = now();
+  const actionText =
+    action === "granted"
+      ? "landed at"
+      : action === "requesting"
+        ? "requesting"
+        : "departing from";
+  const line = `${ship.displayName} ${actionText} ${location}`;
+
+  return {
+    id: generateLogId(timestamp, line),
+    userId: fakeUser.userId,
+    player: fakeUser.userName,
+    emoji: "🛬",
+    line,
+    timestamp,
+    original: `<${timestamp}> <Landing Pad> ${action} landing pad at ${location}`,
+    open: false,
+    reportedBy: [fakeUser.userId],
+    eventType: "landing_pad",
+    metadata: {
+      vehicleName: ship.displayName,
+      vehicleId: ship.id,
+      location,
+      action,
+    },
+  };
+}

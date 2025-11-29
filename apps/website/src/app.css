@@ -1,0 +1,142 @@
+@import 'tailwindcss';
+
+/*
+ * Scan shared-svelte package in node_modules for Tailwind classes
+ * This uses Tailwind v4's @source directive to detect classes in the component library
+ * See: https://tailwindcss.com/docs/detecting-classes-in-source-files
+ */
+@source "../node_modules/@pico/shared";
+
+/* Container query utilities for SessionStats (manual until Tailwind v4 generates them) */
+@container (min-width: 24rem) {
+	.\@sm\:inline {
+		display: inline;
+	}
+}
+
+@container (min-width: 28rem) {
+	.\@md\:inline {
+		display: inline;
+	}
+}
+
+@theme {
+	/* ===== Primary Background Colors ===== */
+	--color-primary: rgb(10 30 42);
+	--color-secondary: rgb(15 35 47);
+	--color-panel: rgb(15 35 47);
+	--color-panel-dark: #1a1a1a;
+
+	/* ===== Semantic Action Colors ===== */
+	--color-success: #4caf50;
+	--color-success-hover: #45a049;
+	--color-danger: #f44336;
+	--color-danger-dark: #d32f2f;
+	--color-warning: #ff9800;
+	--color-warning-hover: #f57c00;
+
+	/* ===== Brand Colors ===== */
+	--color-discord: #5865f2;
+	--color-discord-hover: #4752c4;
+
+	/* ===== Blue Palette ===== */
+	--color-blue-400: rgb(96 165 250);
+	--color-blue-600: rgb(37 99 235);
+
+	/* ===== Overlay Backgrounds (for transparent layers) ===== */
+	--color-overlay-subtle: rgb(255 255 255 / 0.08);
+	--color-overlay-light: rgb(255 255 255 / 0.1);
+	--color-overlay-card: rgb(255 255 255 / 0.03);
+	--color-overlay-dark: rgb(0 0 0 / 0.1);
+
+	/* ===== Border Colors ===== */
+	--color-border-panel: rgb(255 255 255 / 0.2);
+	--color-border-panel-light: rgb(255 255 255 / 0.1);
+
+	/* ===== Text Colors ===== */
+	--color-text-muted: rgb(255 255 255 / 0.6);
+	--color-text-subtle: rgb(255 255 255 / 0.4);
+}
+
+@layer base {
+	html,
+	body {
+		overflow-x: hidden;
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		min-height: 100vh;
+		background: var(--color-primary);
+		font-family: 'Bai Jamjuree', sans-serif;
+		color: white;
+	}
+
+	/* ============================================
+	   SCROLLBAR STYLING
+	   ============================================ */
+	:root {
+		--color-scrollbar-thumb: #555;
+		--color-scrollbar-track: #222;
+		--color-scrollbar-custom-thumb: rgba(255, 255, 255, 0.3);
+		--color-scrollbar-custom-track: rgba(0, 0, 0, 0.2);
+	}
+
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+	}
+
+	*::-webkit-scrollbar {
+		width: 8px;
+		background-color: transparent;
+	}
+
+	*::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	*::-webkit-scrollbar-thumb {
+		background: transparent;
+		border-radius: 4px;
+		transition: background 0.3s ease;
+	}
+
+	*:hover::-webkit-scrollbar-thumb {
+		background: var(--color-scrollbar-thumb);
+	}
+
+	/* Custom scrollbar variant */
+	.scrollbar-custom {
+		scrollbar-width: thin;
+		scrollbar-color: var(--color-scrollbar-custom-thumb) var(--color-scrollbar-custom-track);
+	}
+
+	.scrollbar-custom::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	.scrollbar-custom::-webkit-scrollbar-track {
+		background: var(--color-scrollbar-custom-track);
+	}
+
+	.scrollbar-custom::-webkit-scrollbar-thumb {
+		background: var(--color-scrollbar-custom-thumb);
+		border-radius: 3px;
+	}
+
+	.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+		background: rgba(255, 255, 255, 0.4);
+	}
+}
+
+/* ============================================
+   SPACE BACKGROUNDS
+   ============================================ */
+.bg-stars {
+	background-image: url('/stars.webp');
+	background-color: rgb(10 30 42);
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-blend-mode: overlay;
+}

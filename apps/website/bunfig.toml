@@ -1,0 +1,13 @@
+# Bun configuration for picologs-website
+#
+# This configures Bun to use source files from picologs-shared instead of
+# the compiled dist files which contain .svelte files that Bun can't execute.
+
+[install]
+# No special install configuration needed
+
+[test]
+# Test configuration
+
+# Path mappings don't work in bunfig.toml
+# Use package.json imports field or tsconfig paths instead

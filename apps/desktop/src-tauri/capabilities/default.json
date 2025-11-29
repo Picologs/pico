@@ -1,0 +1,99 @@
+{
+	"$schema": "../gen/schemas/desktop-schema.json",
+	"identifier": "default",
+	"description": "Capability for the main window",
+	"windows": ["main"],
+	"permissions": [
+		"core:default",
+		"core:window:default",
+		"core:window:allow-show",
+		"core:window:allow-start-dragging",
+		"core:window:allow-minimize",
+		"core:window:allow-maximize",
+		"core:window:allow-toggle-maximize",
+		"core:window:allow-close",
+		"fs:default",
+		"fs:allow-exists",
+		"fs:allow-read",
+		"fs:allow-watch",
+		"fs:allow-unwatch",
+		"fs:allow-app-read",
+		"fs:allow-app-write",
+		{
+			"identifier": "fs:scope",
+			"description": "Allows file system access for Star Citizen logs in any installation location. Supports non-standard game installations.",
+			"allow": [
+				{ "path": "$APPDATA" },
+				{ "path": "$APPDATA/**" },
+				{ "path": "$HOME/AppData" },
+				{ "path": "$HOME/AppData/**" },
+				{ "path": "$HOME/Documents" },
+				{ "path": "$HOME/Documents/**" },
+				{ "path": "$HOME/Downloads" },
+				{ "path": "$HOME/Downloads/**" },
+				{ "path": "$HOME/Library" },
+				{ "path": "$HOME/Library/**" },
+				{ "path": "$HOME/Library/Application Support" },
+				{ "path": "$HOME/Library/Application Support/**" },
+				{ "path": "**" }
+			]
+		},
+		"dialog:default",
+		"store:default",
+		"opener:default",
+		"opener:allow-open-url",
+		{
+			"identifier": "opener:allow-open-url",
+			"allow": [
+				{
+					"url": "discord://*"
+				},
+				{
+					"url": "https://*"
+				},
+				{
+					"url": "http://localhost:*"
+				}
+			]
+		},
+		{
+			"identifier": "opener:allow-open-path",
+			"allow": [
+				{
+					"path": "$APPDATA"
+				},
+				{
+					"path": "$APPDATA/**"
+				},
+				{
+					"path": "**/Game.log"
+				}
+			]
+		},
+		"websocket:default",
+		"updater:default",
+		"process:default",
+		"http:default",
+		"http:allow-fetch",
+		"http:allow-fetch-cancel",
+		"http:allow-fetch-read-body",
+		"http:allow-fetch-send",
+		{
+			"identifier": "http:default",
+			"allow": [
+				{
+					"url": "http://localhost:5173/*"
+				},
+				{
+					"url": "http://localhost:8080/*"
+				},
+				{
+					"url": "https://picologs.com/*"
+				},
+				{
+					"url": "https://*.fly.storage.tigris.dev/*"
+				}
+			]
+		}
+	]
+}

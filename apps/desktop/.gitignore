@@ -1,0 +1,25 @@
+.DS_Store
+node_modules
+/build
+/.svelte-kit
+/package
+.env
+.env.*
+!.env.example
+!.env.production
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+/secrets
+/static/Game.log
+Game.log
+# Test coverage
+coverage/
+
+# Playwright test artifacts
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# Tauri build artifacts
+src-tauri/target

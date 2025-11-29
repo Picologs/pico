@@ -1,0 +1,7 @@
+# Bun configuration file
+# https://bun.sh/docs/runtime/bunfig
+
+[test]
+# Preload scripts before running tests
+# This loads the Svelte 5 rune mocks needed for testing .svelte.ts files
+preload = ["./test-setup.ts"]
