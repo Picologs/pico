@@ -1,0 +1,27 @@
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.npmrc
+node_modules
+target
+secrets/
+*.pem
+.env*.local
+picologs/
+Game.log
+RAILWAY_SETUP.md
+FLY_SETUP.md
+DOMAIN_SETUP.md
+.pglite/
+build/
+.svelte-kit/
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/playwright/.auth/
+.env.test

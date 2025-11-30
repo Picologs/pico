@@ -1,0 +1,163 @@
+/* ============================================
+   PICOLOGS COLOR PALETTE & THEME - Tailwind CSS v4
+   ============================================
+   Complete color system for shared-svelte package
+   Matches color-palette.html reference
+*/
+
+@import "tailwindcss";
+
+/* ============================================
+   TAILWIND THEME CUSTOMIZATION
+   ============================================
+   Define colors here to use them with Tailwind utilities.
+   Usage examples:
+   - bg-primary, bg-secondary, bg-panel
+   - text-discord, text-success, text-danger
+   - border-discord/30, bg-success/20
+   - hover:bg-discord-hover
+*/
+@theme {
+  /* ===== Background Colors ===== */
+  --color-primary: rgb(10, 30, 42);
+  --color-secondary: rgb(15, 35, 47);
+  --color-panel: rgb(15, 35, 47);
+  --color-panel-dark: #1a1a1a;
+
+  /* ===== Semantic Colors ===== */
+  --color-success: #4caf50;
+  --color-success-hover: #45a049;
+  --color-danger: #f44336;
+  --color-danger-dark: #d32f2f;
+  --color-warning: #ff9800;
+
+  /* ===== Brand Colors ===== */
+  --color-discord: #5865f2;
+  --color-discord-hover: #4752c4;
+
+  /* ===== Blue Palette (for info states) ===== */
+  --color-blue-400: rgb(96 165 250);
+  --color-blue-600: rgb(37 99 235);
+
+  /* ===== Overlay Backgrounds ===== */
+  --color-overlay-subtle: rgba(255, 255, 255, 0.08);
+  --color-overlay-light: rgba(255, 255, 255, 0.1);
+  --color-overlay-card: rgba(255, 255, 255, 0.03);
+  --color-overlay-dark: rgba(0, 0, 0, 0.1);
+
+  /* ===== Border Colors ===== */
+  --color-border-panel: rgba(255, 255, 255, 0.2);
+  --color-border-panel-light: rgba(255, 255, 255, 0.1);
+
+  /* ===== Text Colors ===== */
+  --color-text-muted: rgba(255, 255, 255, 0.6);
+  --color-text-subtle: rgba(255, 255, 255, 0.4);
+}
+
+/* ============================================
+   BASE STYLES & CSS VARIABLES
+   ============================================ */
+@layer base {
+  :root {
+    color-scheme: dark;
+
+    /* ===== Background Colors ===== */
+    --color-bg-primary: rgb(10, 30, 42);
+    --color-bg-secondary: rgb(15, 35, 47);
+    --color-bg-dark: #1a1a1a;
+
+    /* ===== Semantic Colors ===== */
+    --color-success: #4caf50;
+    --color-success-hover: #45a049;
+    --color-danger: #f44336;
+    --color-danger-dark: #d32f2f;
+    --color-warning: #ff9800;
+
+    /* ===== Brand Colors ===== */
+    --color-discord: #5865f2;
+    --color-discord-hover: #4752c4;
+
+    /* ===== White Overlays (for dark mode) ===== */
+    --color-white-5: rgba(255, 255, 255, 0.05);
+    --color-white-10: rgba(255, 255, 255, 0.1);
+    --color-white-20: rgba(255, 255, 255, 0.2);
+    --color-white-30: rgba(255, 255, 255, 0.3);
+    --color-white-80: rgba(255, 255, 255, 0.8);
+
+    /* ===== Black Overlays ===== */
+    --color-black-10: rgba(0, 0, 0, 0.1);
+    --color-black-20: rgba(0, 0, 0, 0.2);
+    --color-black-40: rgba(0, 0, 0, 0.4);
+
+    /* ===== Effects ===== */
+    --color-success-glow: rgba(76, 175, 80, 0.4);
+    --color-error-glow: rgba(239, 68, 68, 0.3);
+
+    /* ===== Skeleton Loader ===== */
+    --color-skeleton-base: rgb(55 65 81 / 0.3);
+    --color-skeleton-highlight: rgb(75 85 99 / 0.5);
+
+    /* ===== UI Elements ===== */
+    --color-scrollbar-thumb: #555;
+    --color-scrollbar-track: #222;
+    --color-scrollbar-custom-thumb: rgba(255, 255, 255, 0.3);
+    --color-scrollbar-custom-track: rgba(0, 0, 0, 0.2);
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* ============================================
+	   SCROLLBAR STYLING
+	   ============================================ */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    background-color: transparent;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+
+  *:hover::-webkit-scrollbar-thumb {
+    background: var(--color-scrollbar-thumb);
+  }
+
+  /* Custom scrollbar variant */
+  .scrollbar-custom {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-scrollbar-custom-thumb)
+      var(--color-scrollbar-custom-track);
+  }
+
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: var(--color-scrollbar-custom-track);
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background: var(--color-scrollbar-custom-thumb);
+    border-radius: 3px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+  }
+}

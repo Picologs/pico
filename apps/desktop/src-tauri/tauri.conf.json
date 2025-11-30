@@ -1,0 +1,71 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Picologs",
+  "version": "1.0.1",
+  "identifier": "com.picologs.app",
+  "build": {
+    "beforeDevCommand": "vite dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm run build",
+    "frontendDist": "../build"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Picologs 1.0.1",
+        "url": "/waiting",
+        "width": 1000,
+        "height": 600,
+        "minWidth": 800,
+        "minHeight": 500,
+        "visible": false,
+        "decorations": false,
+        "transparent": false
+      },
+      {
+        "label": "splashscreen",
+        "title": "Picologs",
+        "width": 400,
+        "height": 300,
+        "resizable": false,
+        "decorations": false,
+        "transparent": false,
+        "center": true,
+        "visible": true,
+        "url": "/splash"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' tauri:; connect-src 'self' ipc: tauri: blob: http://ipc.localhost ws://localhost:1420 ws://localhost:8080 http://localhost:8080 wss://* https://cdn.discordapp.com https://* http://localhost:5173; img-src 'self' data: https: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self'; font-src 'self' data: https://fonts.gstatic.com; frame-src https://* http://localhost:5173; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "msi"
+    ],
+    "icon": [
+      "icons/icon.png",
+      "icons/icon.ico"
+    ],
+    "createUpdaterArtifacts": true,
+    "windows": {
+      "signCommand": "trusted-signing-cli -e https://eus.codesigning.azure.net -a sccommand -c space-man-rob -d Picologs %1",
+      "wix": {}
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDNDMzFDRDcxMTEzQUNGMjYKUldRbXp6b1JjYzB4UEx0ODl6NkNtellkVXhNbnRUQ2QwRDY1ZGlvNWJmL0RkeVdMKzBudkM1WHoK",
+      "endpoints": [
+        "https://picologs.com/releases/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}

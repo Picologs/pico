@@ -1,0 +1,27 @@
+.DS_Store
+.env
+.env.local
+.env.test
+.env.development.local
+.env.test.local
+.env.production.local
+.npmrc
+node_modules
+target
+secrets/
+*.pem
+.env*.local
+picologs/
+Game.log
+RAILWAY_SETUP.md
+FLY_SETUP.md
+DOMAIN_SETUP.md
+
+# Test artifacts
+.test-server.pid
+playwright-report/
+test-results/
+
+# Log files
+*.log
+test-results.txt

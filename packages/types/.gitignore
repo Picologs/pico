@@ -1,0 +1,18 @@
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.npmrc
+node_modules
+dist
+target
+secrets/
+*.pem
+.env*.local
+picologs/
+Game.log
+
+# Coverage reports
+coverage/

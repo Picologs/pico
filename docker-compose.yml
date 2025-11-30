@@ -1,0 +1,141 @@
+# Picologs - Local Development with Docker Compose
+#
+# This runs PostgreSQL, MinIO (S3), server, and website locally.
+# The desktop app runs natively (Tauri can't be containerized).
+#
+# Quick start:
+#   1. cp .env.example .env
+#   2. Edit .env with your Discord OAuth credentials
+#   3. docker compose up -d
+#   4. Open http://localhost:5173
+#
+# For desktop app development, run separately:
+#   cd apps/desktop && pnpm tauri dev
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: picologs-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: picologs
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # MinIO - S3-compatible object storage for avatars
+  minio:
+    image: minio/minio:latest
+    container_name: picologs-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web console
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Create MinIO bucket on startup
+  minio-setup:
+    image: minio/mc:latest
+    container_name: picologs-minio-setup
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 minioadmin minioadmin;
+      mc mb local/picologs-uploads --ignore-existing;
+      mc anonymous set public local/picologs-uploads;
+      exit 0;
+      "
+
+  # WebSocket Server
+  server:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    container_name: picologs-server
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      HOST: 0.0.0.0
+      NODE_ENV: development
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/picologs
+      JWT_SECRET: ${JWT_SECRET}
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}
+      BROADCAST_API_KEY: ${BROADCAST_API_KEY:-dev-broadcast-key}
+      ALLOWED_ORIGINS: http://localhost:5173,http://localhost:1420
+      # MinIO storage
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_ENDPOINT_URL_S3: http://minio:9000
+      AWS_REGION: auto
+      BUCKET_NAME: picologs-uploads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # SvelteKit Website (OAuth bridge + web UI)
+  website:
+    build:
+      context: .
+      dockerfile: apps/website/Dockerfile
+    container_name: picologs-website
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      server:
+        condition: service_healthy
+    ports:
+      - "5173:3000"
+    environment:
+      PORT: 3000
+      NODE_ENV: development
+      ORIGIN: http://localhost:5173
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/picologs
+      JWT_SECRET: ${JWT_SECRET}
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}
+      DISCORD_REDIRECT_URI: http://localhost:5173/auth/callback
+      # WebSocket URLs
+      WEBSOCKET_SERVER_URL: http://server:8080
+      PUBLIC_WS_URL: ws://localhost:8080/ws
+      PUBLIC_URL: http://localhost:5173
+      # MinIO storage
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_ENDPOINT_URL_S3: http://minio:9000
+      AWS_REGION: auto
+      BUCKET_NAME: picologs-uploads
+      R2_PUBLIC_DOMAIN: http://localhost:9000/picologs-uploads
+
+volumes:
+  postgres_data:
+  minio_data:
